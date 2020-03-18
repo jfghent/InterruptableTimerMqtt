@@ -5,6 +5,7 @@
  */
 package com.jfghent.interruptabletimermqtt;
 
+import com.jfghent.interruptabletimer.InterfaceVoid;
 import com.jfghent.interruptabletimer.InterruptableTimer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,8 +22,8 @@ public class InterruptableTimerMqtt extends InterruptableTimer{
     private String _stopTopic, _startTopic;
     private MqttMessage _startMsg, _stopMsg; 
     
-    public InterruptableTimerMqtt(String TaskName, long Time, MqttClient mc, String StartTopic, String StopTopic, MqttMessage StartMsg, MqttMessage StopMsg) {
-        super(TaskName, Time);
+    public InterruptableTimerMqtt(String TaskName, long Time, InterfaceVoid onfinal, MqttClient mc, String StartTopic, String StopTopic, MqttMessage StartMsg, MqttMessage StopMsg) {
+        super(TaskName, Time, onfinal);
         _mc = mc;
    
         _stopTopic = StopTopic;
@@ -30,12 +31,22 @@ public class InterruptableTimerMqtt extends InterruptableTimer{
         _startMsg = StartMsg;
         _stopMsg = StopMsg;
         
+        
         super.if_onCancel = () -> {
-            SendStopCommand();
+            //SendStopCommand();
+            super.if_onFinish.run();
         };
         
         super.if_onFinish = () -> {
             SendStopCommand();
+            //sleep to give any final message a chance to send
+            //TODO: figure out how to know if the message was delivered
+            //maybe subscribe to the message we are sending, then unsubscribe, 
+            //then disconnect... seems convoluted.
+            try{
+               Thread.sleep(1000);
+            }catch(InterruptedException e){
+            }
         };
         
         super.if_onPause = () -> {
