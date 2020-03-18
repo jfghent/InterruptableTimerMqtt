@@ -62,6 +62,10 @@ public class InterruptableTimerMqtt extends InterruptableTimer{
         };
     }
 
+    //public InterruptableTimerMqtt(String test_task, int i, MqttClient mc, String hometeststart, String hometeststop, MqttMessage mqttMessage, MqttMessage mqttMessage0) {
+    //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //}
+
     private void SendStopCommand(){
         try {
             _mc.publish(_stopTopic, _stopMsg);
